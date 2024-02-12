@@ -4,3 +4,4 @@ source/
 .git/
 _pychache_/
 /__pycache__
+/.vs
