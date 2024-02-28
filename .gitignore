@@ -5,6 +5,6 @@ source/
 _pychache_/
 /__pycache__
 /.vs
-/ini/RedditScraperConf.ini
-/ini/TelegramBotConf.ini
+/ini
 /env1
+/ini/TelegramBotConf.ini
