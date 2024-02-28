@@ -1,10 +1,10 @@
-env1/
 local/
 source/
 .git/
 _pychache_/
 /__pycache__
 /.vs
-/ini
-/env1
+ini/
+env1/
+
 /ini/TelegramBotConf.ini
