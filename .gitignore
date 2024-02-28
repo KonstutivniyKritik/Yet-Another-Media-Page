@@ -6,3 +6,5 @@ _pychache_/
 /.vs
 ini/
 env1/
+/ini/RedditScraperConf.ini
+/ini/TelegramBotConf.ini
