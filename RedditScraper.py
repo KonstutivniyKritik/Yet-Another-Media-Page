@@ -14,7 +14,7 @@ import pathlib
 from Constants import * 
 
 config = configparser.ConfigParser()
-config.read('RedditScraperConf.ini')
+config.read(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'RedditScraperConf.ini')
 __SubReddit = config['REDDIT']['SubReddit']
 __Quantity = config['REDDIT']['Quantity']
 __Order = config['REDDIT']['Order']
@@ -157,9 +157,9 @@ def GetOrderTimeFilter():
 
 def ChangeConfig(Title, Value):
     config['REDDIT'][Title] = Value
-    with open('conf.ini', 'w') as configfile:
+    with open(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'RedditScraperConf.ini', 'w') as configfile:
         config.write(configfile)
-    config.read('conf.ini')
+    config.read(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'RedditScraperConf.ini')
 
 def BackupSettings():
     global __Quantity 

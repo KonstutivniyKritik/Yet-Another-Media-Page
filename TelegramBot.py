@@ -18,7 +18,7 @@ from Constants import *
 import BotStates
 
 config = configparser.ConfigParser()
-config.read('TelegramBotConf.ini')
+config.read(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'TelegramBotConf.ini')
 BotToken = config.get('Telegram Bot',"BotToken")
 bot = telebot.TeleBot(BotToken)
 StatusInputText = "\U0001F4CA Статус"
@@ -323,9 +323,9 @@ def ReplyChangeInterval(message):
 
 def ChangeConfig(Title, Value):
     config['Telegram Bot'][Title] = Value
-    with open('TelegramBotConf.ini', 'w') as configfile:
+    with open(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'TelegramBotConf.ini', 'w') as configfile:
         config.write(configfile)
-    config.read('TelegramBotConf.ini')
+    config.read(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'TelegramBotConf.ini')
 
 def Job(id):
     bot.send_message(id, "Начинаю воровать...", )
