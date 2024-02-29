@@ -16,21 +16,14 @@ import schedule
 import RedditScraper
 from Constants import *
 import BotStates
+from BotLayoutElements import *
 
 config = configparser.ConfigParser()
-config.read(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'TelegramBotConf.ini')
+config.read(TBotConfigFile)
 BotToken = config.get('Telegram Bot',"BotToken")
 bot = telebot.TeleBot(BotToken)
-StatusInputText = "\U0001F4CA Статус"
-StealInputText = '\U0001F640 Воровство СЕЙЧАС!!!'
-SettingsInputText = '\U00002699 Настройки'
-BackInputText = '\U0000274C Назад'
-StatusButton = types.KeyboardButton(StatusInputText)
-StealButton = types.KeyboardButton(StealInputText)
-SettingsButton = types.KeyboardButton(SettingsInputText)
-BackButton = types.KeyboardButton(BackInputText)
-Users = [1012947591]
-NewBee = []
+# Users = [1012947591]
+# NewBee = []
 Interval = config.get('Telegram Bot',"Interval")
 JobStartTime = datetime.now() + timedelta(hours= (int)(Interval[:2]), minutes= (int)(Interval[3:]))
 
@@ -38,11 +31,11 @@ JobStartTime = datetime.now() + timedelta(hours= (int)(Interval[:2]), minutes= (
 
 @bot.message_handler(commands=["start"])
 def startmessage(message):
-    if not os.path.exists(SourceDirectory):
-        os.makedirs(SourceDirectory)
-    if not os.path.exists(LocalDerictory):
-        os.makedirs(LocalDerictory)  
-    if message.from_user.id in Users:
+    # if not os.path.exists(SourceDirectory):
+    #     os.makedirs(SourceDirectory)
+    # if not os.path.exists(LocalDerictory):
+    #     os.makedirs(LocalDerictory)  
+    # if message.from_user.id in Users:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
         bot.send_message(message.from_user.id, "Я родился и готов воровать!!!", reply_markup = markup)
@@ -50,22 +43,22 @@ def startmessage(message):
         ReplyStatus(message)
         Thread(target=schedule_checker).start() 
         bot.polling(none_stop= True, interval= 0)
-    else: 
-        NewBee.append(message.from_user.id)
-        bot.send_message(message.from_user.id, "Введи пароль")
+    # else: 
+    #     NewBee.append(message.from_user.id)
+    #     bot.send_message(message.from_user.id, "Введи пароль")
 
-@bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_START)
-def get_text_messages(message):
-    if message.from_user.id in NewBee:
-        if message.text == PassWord:
-            BotState = BotStates.States.S_FRONTPAGE
-            bot.send_message(message.from_user.id, "Правильный пароль!!!")
-            NewBee.clear
-            Users.append(message.from_user.id)
-            startmessage(message)
-        else:
-            bot.send_message(message.from_user.id, "Неправильный пароль!!!") 
-            bot.send_message(message.from_user.id, "Введи пароль")
+# @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_START)
+# def get_text_messages(message):
+#     if message.from_user.id in NewBee:
+#         if message.text == PassWord:
+#             BotState = BotStates.States.S_FRONTPAGE
+#             bot.send_message(message.from_user.id, "Правильный пароль!!!")
+#             NewBee.clear
+#             Users.append(message.from_user.id)
+#             startmessage(message)
+#         else:
+#             bot.send_message(message.from_user.id, "Неправильный пароль!!!") 
+#             bot.send_message(message.from_user.id, "Введи пароль")
 
 @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_FRONTPAGE)
 def get_text_messages(message):
@@ -323,9 +316,9 @@ def ReplyChangeInterval(message):
 
 def ChangeConfig(Title, Value):
     config['Telegram Bot'][Title] = Value
-    with open(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'TelegramBotConf.ini', 'w') as configfile:
+    with open(TBotConfigFile) as configfile:
         config.write(configfile)
-    config.read(os.path.dirname(os.path.realpath(__file__)) + '//ini//' + 'TelegramBotConf.ini')
+    config.read(TBotConfigFile)
 
 def Job(id):
     bot.send_message(id, "Начинаю воровать...", )
