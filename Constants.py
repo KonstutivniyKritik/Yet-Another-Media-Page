@@ -4,7 +4,7 @@ import pathlib
 BaseDirectory = str(pathlib.Path(__file__).parent.resolve()) + '/'
 SourceDirectory = BaseDirectory + 'source/'
 LocalDerictory = BaseDirectory + 'local/'
-ConfigDirectory = BaseDirectory + 'configurationfiles/'
+ConfigDirectory = BaseDirectory + 'configuration_files/'
 TBotConfigFile = ConfigDirectory + 'TelegramBotConfiguration.ini'
 RScrConfigFile = ConfigDirectory + 'RedditScraperConfiguration.ini'
 PassWord = "Password"

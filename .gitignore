@@ -3,6 +3,6 @@ source/
 .git/
 /__pycache__
 .vs/env1/
-/configuration files/RedditScraperConfiguration.ini
-/configuration files/TelegramBotConfiguration.ini
+/configuration_files/RedditScraperConfiguration.ini
+/configuration_files/TelegramBotConfiguration.ini
 /.vs
