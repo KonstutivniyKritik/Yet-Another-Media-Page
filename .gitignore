@@ -2,7 +2,7 @@ local/
 source/
 .git/
 /__pycache__
-.vs/
-!configuration files/.gitkeep 
-env1/
-
+.vs/env1/
+/configuration files/RedditScraperConfiguration.ini
+/configuration files/TelegramBotConfiguration.ini
+/.vs
