@@ -1,10 +1,8 @@
 local/
 source/
 .git/
-_pychache_/
 /__pycache__
-/.vs
-ini/
+.vs/
+configuration files/*
 env1/
-/ini/RedditScraperConf.ini
-/ini/TelegramBotConf.ini
+
