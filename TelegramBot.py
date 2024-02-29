@@ -316,7 +316,7 @@ def ReplyChangeInterval(message):
 
 def ChangeConfig(Title, Value):
     config['Telegram Bot'][Title] = Value
-    with open(TBotConfigFile) as configfile:
+    with open(TBotConfigFile, mode = "w") as configfile:
         config.write(configfile)
     config.read(TBotConfigFile)
 

@@ -157,7 +157,7 @@ def GetOrderTimeFilter():
 
 def ChangeConfig(Title, Value):
     config['REDDIT'][Title] = Value
-    with open(RScrConfigFile) as configfile:
+    with open(RScrConfigFile, mode = "w") as configfile:
         config.write(configfile)
     config.read(RScrConfigFile)
 

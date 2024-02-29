@@ -8,4 +8,4 @@ BackInputText = '\U0000274C Back'
 StatusButton = types.KeyboardButton(StatusInputText)
 StealButton = types.KeyboardButton(StealInputText)
 SettingsButton = types.KeyboardButton(SettingsInputText)
-BackButton = types.KeyboardButton(BackInputText)s
+BackButton = types.KeyboardButton(BackInputText)
