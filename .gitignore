@@ -3,6 +3,6 @@ source/
 .git/
 /__pycache__
 .vs/
-configuration files/
+!configuration files/.gitkeep 
 env1/
 
