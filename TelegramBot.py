@@ -38,7 +38,7 @@ def startmessage(message):
     # if message.from_user.id in Users:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
-        bot.send_message(message.from_user.id, "Я родился и готов воровать!!!", reply_markup = markup)
+        bot.send_message(message.from_user.id, "Ready to work!", reply_markup = markup)
         UpdateSchedule()
         ReplyStatus(message)
         Thread(target=schedule_checker).start() 
@@ -122,31 +122,31 @@ def get_text_messages(message):
     if message.text == BackInputText:
         ReplySettings(message)
     elif (RedditScraper.ChangeSubreddit(message.text)):
-        bot.send_message(message.from_user.id, "Сабреддит успешно изменен!!!")
+        bot.send_message(message.from_user.id, "Subreddit changed!!!")
         ReplySettings(message)
     else:
-        bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+        bot.send_message(message.from_user.id, "Error! Try again:")
         ReplyChangeSubreddit(message)
         
 @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_SETORDER)
 def get_text_messages(message):
     if message.text == BackInputText:
         ReplySettings(message)
-    elif message.text == '\U0001F525 Горячее':
+    elif message.text == '\U0001F525 Hot':
         if RedditScraper.ChangeOrder('hot'):
             bot.send_message(message.from_user.id, "Порядок успешно изменен!!!")
             ReplySettings(message)
         else:
              bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
              ReplyChangeOrder(message)
-    elif message.text == '\U0001F4A5 Лучшее':
+    elif message.text == '\U0001F4A5 Top':
         if RedditScraper.ChangeOrder('top'):
             bot.send_message(message.from_user.id, "Порядок успешно изменен!!!")
             ReplySettings(message)
         else:
              bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
              ReplyChangeOrder(message)
-    elif message.text == '\U00002728 Новое':
+    elif message.text == '\U00002728 New':
         if RedditScraper.ChangeOrder('new'):
             bot.send_message(message.from_user.id, "Порядок успешно изменен!!!")
             ReplySettings(message)
@@ -158,40 +158,40 @@ def get_text_messages(message):
 def get_text_messages(message):
     if message.text == BackInputText:
         ReplySettings(message)
-    elif message.text == 'Все время':
+    elif message.text == 'All':
         if RedditScraper.ChangeOrderTimeFilter('all'):
-            bot.send_message(message.from_user.id, "Время выборки успешно изменено!!!")
+            bot.send_message(message.from_user.id, "Time order changed!!!")
             ReplySettings(message)
         else:
-             bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+             bot.send_message(message.from_user.id, "Error! Try again:")
              ReplyChangeTimeFilter(message)
-    elif message.text == 'Год':
+    elif message.text == 'Year':
         if RedditScraper.ChangeOrderTimeFilter('year'):
-            bot.send_message(message.from_user.id, "Время выборки успешно изменено!!!")
+            bot.send_message(message.from_user.id, "Time order changed!!!")
             ReplySettings(message)
         else:
-             bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+             bot.send_message(message.from_user.id, "Error! Try again:")
              ReplyChangeTimeFilter(message)
-    elif message.text == 'Месяц':
+    elif message.text == 'Month':
         if RedditScraper.ChangeOrderTimeFilter('month'):
-            bot.send_message(message.from_user.id, "Время выборки успешно изменено!!!")
+            bot.send_message(message.from_user.id, "Time order changed!!!")
             ReplySettings(message)
         else:
-            bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+            bot.send_message(message.from_user.id, "Error! Try again:")
             ReplyChangeTimeFilter(message)
-    elif message.text == 'День':
+    elif message.text == 'Day':
         if RedditScraper.ChangeOrderTimeFilter('day'):
-            bot.send_message(message.from_user.id, "Время выборки успешно изменено!!!")
+            bot.send_message(message.from_user.id, "Time order changed!!!")
             ReplyChangeTimeFilter(message)
         else:
-            bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+            bot.send_message(message.from_user.id, "Error! Try again:")
             ReplyChangeTimeFilter(message)
-    elif message.text == 'Час':
+    elif message.text == 'Hour':
         if RedditScraper.ChangeOrderTimeFilter('hour'):
-            bot.send_message(message.from_user.id, "Время выборки успешно изменено!!!")
+            bot.send_message(message.from_user.id, "Time order changed!!!")
             ReplySettings(message)
         else:
-            bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+            bot.send_message(message.from_user.id, "Error! Try again:")
             ReplyChangeTimeFilter(message)
             
 @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_SETQUANTITY)
@@ -199,10 +199,10 @@ def get_text_messages(message):
     if message.text == BackInputText:
         ReplySettings(message)
     elif RedditScraper.ChangeQuantity(message.text):
-        bot.send_message(message.from_user.id, "Количество мемов успешно изменено!!!")
+        bot.send_message(message.from_user.id, "Download quantity changed!!!")
         ReplySettings(message)
     else:
-         bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+         bot.send_message(message.from_user.id, "Error! Try again:")
          ReplyChangeQuantity(message)
 
 @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_SETINTERVAL)
@@ -217,10 +217,10 @@ def get_text_messages(message):
             Interval = message.text
             ChangeConfig('interval', message.text)
             UpdateSchedule()
-            bot.send_message(message.from_user.id, "Интервал Успешно изменен!!!")
+            bot.send_message(message.from_user.id, "Interval changed!!!")
             ReplySettings(message)
         except:
-            bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+            bot.send_message(message.from_user.id, "Error! Try again:")
             ReplyChangeInterval(message)
         
 def ReplyTest(message):
@@ -235,7 +235,7 @@ def ReplyTest(message):
     markup.add(OneMemeButton, FiveMemeButton,TenMemeButton,
                TwentyFiveMemeButton, FivetyMemeButton,
                BackButton)
-    bot.send_message(message.from_user.id, "Сколько мемов надо?", reply_markup = markup)
+    bot.send_message(message.from_user.id, "How much content to download?", reply_markup = markup)
 
 def ReplyStatus(message):
     ChangeConfig('State', BotStates.States.S_FRONTPAGE)
@@ -243,17 +243,17 @@ def ReplyStatus(message):
     DeltaTime = JobStartTime - TimeNow
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(StatusButton, StealButton, SettingsButton)
-    bot.send_message(message.from_user.id, "Сабреддит: " + (str)(RedditScraper.GetSubreddit()) + "\n"
+    bot.send_message(message.from_user.id, "Subreddit: " + (str)(RedditScraper.GetSubreddit()) + "\n"
                                          + "\n"
-                                         + "Порядок: " + (str)(RedditScraper.GetOrder()) + "\n"
+                                         + "Orter: " + (str)(RedditScraper.GetOrder()) + "\n"
                                          + "\n"
-                                         + "Временной фильтр: " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
+                                         + "Time Oreder: " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
                                          + "\n"
-                                         + "Количество мемов: " + (str)(RedditScraper.GetQuantity()) + "\n"
+                                         + "Content quantity: " + (str)(RedditScraper.GetQuantity()) + "\n"
                                          + "\n"
-                                         + "Интервал воровства \U000023F3: " + Interval + "\n"
+                                         + "Interval \U000023F3: " + Interval + "\n"
                                          + "\n"
-                                         + "Следующее воровство через \U000023F0: \n" + (str)(DeltaTime.seconds//3600) + ':' + (str)(DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60) + ':' + (str)(DeltaTime.seconds - ((DeltaTime.seconds//3600)*3600) - ((DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60)*60)), reply_markup = markup)
+                                         + "Next drop in \U000023F0: \n" + (str)(DeltaTime.seconds//3600) + ':' + (str)(DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60) + ':' + (str)(DeltaTime.seconds - ((DeltaTime.seconds//3600)*3600) - ((DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60)*60)), reply_markup = markup)
     
 def ReplySettings(message):
     ChangeConfig('State', BotStates.States.S_SETTINGS)
@@ -265,21 +265,21 @@ def ReplySettings(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(ChangeSubredditButton,ChangeOrderButton,ChangeTimeFilterButton,
                ChangeQuantityButton, ChangeIntervalButton, BackButton)
-    bot.send_message(message.from_user.id, "Изменить сабреддит (1): " + (str)(RedditScraper.GetSubreddit()) + "\n"
+    bot.send_message(message.from_user.id, "Change subreddit (1): " + (str)(RedditScraper.GetSubreddit()) + "\n"
                                          + "\n"
-                                         + "Изменить порядок (2): " + (str)(RedditScraper.GetOrder()) + "\n"
+                                         + "Change order (2): " + (str)(RedditScraper.GetOrder()) + "\n"
                                          + "\n"
-                                         + "Изменить временной фильтр (3): " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
+                                         + "Change time order (3): " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
                                          + "\n"
-                                         + "Изменить количество мемов (4): " + (str)(RedditScraper.GetQuantity()) + "\n"
+                                         + "Change download quantity (4): " + (str)(RedditScraper.GetQuantity()) + "\n"
                                          + "\n"
-                                         + "Изменить интервал воровства (5) \n" + (str)(Interval), reply_markup = markup)
+                                         + "Change interval (5) \n" + (str)(Interval), reply_markup = markup)
     
 def ReplyChangeSubreddit(message):
     ChangeConfig('State', BotStates.States.S_SETSUBREDDIT)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(BackButton)
-    bot.send_message(message.from_user.id, "Введите название сабреддита (без /r)", reply_markup = markup)
+    bot.send_message(message.from_user.id, "Write subreddit name (без /r)", reply_markup = markup)
 
 def ReplyChangeOrder(message):
     ChangeConfig('State', BotStates.States.S_SETORDER)
@@ -288,31 +288,31 @@ def ReplyChangeOrder(message):
     OrderTopButton = types.KeyboardButton('\U0001F4A5 Лучшее')
     OrderNewButton = types.KeyboardButton('\U00002728 Новое')
     markup.add(OrderHotButton,OrderTopButton,OrderNewButton,BackButton)
-    bot.send_message(message.from_user.id, "Выберите порядок выборки", reply_markup = markup)
+    bot.send_message(message.from_user.id, "Choose order ", reply_markup = markup)
     
 def ReplyChangeTimeFilter(message):
     ChangeConfig('State', BotStates.States.S_SETTIMEFILTER)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    TimeFilterAllButton = types.KeyboardButton('Все время')
-    TimeFilterYearButton = types.KeyboardButton('Год')
-    TimeFilterMonthButton = types.KeyboardButton('Месяц')
-    TimeFilterDayButton = types.KeyboardButton('День')
-    TimeFilterHourButton = types.KeyboardButton('Час')
+    TimeFilterAllButton = types.KeyboardButton('All')
+    TimeFilterYearButton = types.KeyboardButton('Year')
+    TimeFilterMonthButton = types.KeyboardButton('Month')
+    TimeFilterDayButton = types.KeyboardButton('Day')
+    TimeFilterHourButton = types.KeyboardButton('Hour')
     markup.add(TimeFilterHourButton, TimeFilterDayButton, TimeFilterMonthButton,
                TimeFilterYearButton, TimeFilterAllButton, BackButton)
-    bot.send_message(message.from_user.id, "Выберите временной отрезок выборки", reply_markup = markup)
+    bot.send_message(message.from_user.id, "Choose time order", reply_markup = markup)
     
 def ReplyChangeQuantity(message): 
     ChangeConfig('State', BotStates.States.S_SETQUANTITY)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(BackButton)
-    bot.send_message(message.from_user.id, "Введите количество мемов:", reply_markup = markup)
+    bot.send_message(message.from_user.id, "Write download qquantity:", reply_markup = markup)
     
 def ReplyChangeInterval(message):
     ChangeConfig('State', BotStates.States.S_SETINTERVAL)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(BackButton)
-    bot.send_message(message.from_user.id, "Введите время в 24-часовом формате (ЧЧ:ММ)", reply_markup = markup)
+    bot.send_message(message.from_user.id, "Write interval in 24-hour format (HH:MM)", reply_markup = markup)
 
 def ChangeConfig(Title, Value):
     config['Telegram Bot'][Title] = Value
@@ -321,7 +321,7 @@ def ChangeConfig(Title, Value):
     config.read(TBotConfigFile)
 
 def Job(id):
-    bot.send_message(id, "Начинаю воровать...", )
+    bot.send_message(id, "Begin download...", )
     config.set('Telegram Bot',"State", BotStates.States.S_FRONTPAGE)
     if (RedditScraper.RedditDownload()):
         onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
@@ -329,14 +329,14 @@ def Job(id):
             try:
                 bot.send_photo(id, photo=open(SourceDirectory + sourcefileineng, 'rb'))
             except:
-                bot.send_message(id, "Не удалось отправить фото", reply_markup = markup)
+                bot.send_message(id, "Error with Telegram sending", reply_markup = markup)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
-        bot.send_message(id, "Закончил воровать...", reply_markup = markup)
+        bot.send_message(id, "End download...", reply_markup = markup)
     else:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
-        bot.send_message(id, "Ошибка в части Реддита! ", reply_markup = markup) 
+        bot.send_message(id, "Error with Reddit library! ", reply_markup = markup) 
     UpdateSchedule()
    
 def UpdateSchedule():
