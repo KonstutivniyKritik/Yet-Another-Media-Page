@@ -2,3 +2,7 @@ praw==7.7.1
 pyTelegramBotAPI==4.14.0
 Requests==2.31.0
 schedule==1.2.0
+pytesseract==0.3.10
+opencv-python==4.9.0.80
+regex==2023.12.25
+googletrans==3.0.0
