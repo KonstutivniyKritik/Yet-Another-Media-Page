@@ -1,1 +1,1 @@
-Bot will send content from reddit to your telegram dm
+Bot will send content from reddit to your telegram dm every hour
