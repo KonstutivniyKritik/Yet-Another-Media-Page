@@ -25,7 +25,7 @@ def Translate(imagefile):
     # Up-sample
     work_img = cv2.resize(work_img, (0, 0), fx=2, fy=2)
 
-    # # Remove shadows, cf. https://stackoverflow.com/a/44752405/11089932
+    
     # dilated_img = cv2.dilate(work_img, np.ones((7, 7), np.uint8))
     # bg_img = cv2.medianBlur(dilated_img, 21)
     # diff_img = 255 - cv2.absdiff(work_img, bg_img)
