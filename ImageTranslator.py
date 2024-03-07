@@ -1,7 +1,7 @@
 from genericpath import isfile
 from ntpath import join
 import os
-import pytesseract
+import easyocr
 from PIL import Image
 from Constants import *
 import shutil
@@ -32,55 +32,50 @@ def Translate(imagefile):
     # norm_img = cv2.normalize(diff_img, None, alpha=0, beta=255,
     #                          norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
 
-    work_img = cv2.inRange(work_img, np.array([0, 0, 123]), np.array([179, 255, 255]))
-    #tesseract
-    config = '--oem 3 --psm %d' % 12
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-    d = pytesseract.image_to_data(work_img, output_type="dict", config = config, lang='eng')
+    reader = easyocr.Reader(['ru', 'en'])
+    ocr = reader.readtext(img)
 
     #group words into phrases
-    phs = {'phrases': [], 'left': [], 'top': [], 'width': [], 'height': []}
-    ph = ""
-    left = max(d['left'])
-    top= max(d['top'])
-    width = 0
-    height = 0
-    for i in range(len(d['conf'])):
-         if d['conf'][i] > 60:
-             ph += d['text'][i] + " "
-             left = left if left < d['left'][i] else d['left'][i]
-             top = top if top < d['top'][i] else d['top'][i]
-             width += d['width'][i]
-             height = height if height > d['height'][i] else d['height'][i]
-         elif ph != '':
-             phs['phrases'].append(ph) 
-             phs['left'].append(left)
-             phs['top'].append(top)
-             phs['width'].append(width)
-             phs['height'].append(height)
-             ph = ""
-             left = max(d['left'])
-             top = max(d['top'])
-             width = 0
-             height = 0
+    # phs = {'phrases': [], 'left': [], 'top': [], 'width': [], 'height': []}
+    # ph = ""
+    # left = max(d['left'])
+    # top= max(d['top'])
+    # width = 0
+    # height = 0
+    # for i in range(len(d['conf'])):
+    #      if d['conf'][i] > 60:
+    #          ph += d['text'][i] + " "
+    #          left = left if left < d['left'][i] else d['left'][i]
+    #          top = top if top < d['top'][i] else d['top'][i]
+    #          width += d['width'][i]
+    #          height = height if height > d['height'][i] else d['height'][i]
+    #      elif ph != '':
+    #          phs['phrases'].append(ph) 
+    #          phs['left'].append(left)
+    #          phs['top'].append(top)
+    #          phs['width'].append(width)
+    #          phs['height'].append(height)
+    #          ph = ""
+    #          left = max(d['left'])
+    #          top = max(d['top'])
+    #          width = 0
+    #          height = 0
         
     #change text
-    n_boxes = len(d['text'])
+    n_boxes = len(ocr)
     translator = Translator()
-    for i in range(len(phs['phrases'])):
-        (x, y, w, h) = (int(phs['left'][i]), int(phs['top'][i]), int(phs['width'][i]), int(phs['height'][i]))
-        startpoint = (x, y)
-        endpoint = (x + w, y + h)
-        colorR = img[x - 1 , y - 1, 0]
-        colorG = img[x - 1 , y - 1, 1]
-        colorB = img[x - 1 , y - 1, 2]
-        img = cv2.rectangle(img, startpoint , endpoint, (int(colorR), int(colorG), int(colorB)), -1)
-        trtext = translator.translate(phs['phrases'][i], dest='ru').text
-        img = cv2.putText(img, trtext, org = (x, y + h),
-                                             fontFace = cv2.FONT_HERSHEY_COMPLEX,
-                                             fontScale = get_optimal_font_scale(phs['phrases'][i], phs['width'][i]),
-                                             color = (255 - int(colorR), 255 - int(colorG), 255 - int(colorB)), 
-                                             thickness = 2)
+    for i in range(n_boxes):
+        (tl,tr,br,bl) = (ocr[i][0][0], ocr[i][0][1], ocr[i][0][2], ocr[i][0][3])
+        #colorR = img[x - 1 , y - 1, 0]
+        #colorG = img[x - 1 , y - 1, 1]
+        #colorB = img[x - 1 , y - 1, 2]
+        img = cv2.rectangle(img, (int(tl[0]),int(tl[1])) , (int(br[0]),int(br[1])), color = (0, 0, 0), thickness= 1)
+        #trtext = translator.translate(phs['phrases'][i], dest='ru').text
+        #img = cv2.putText(img, trtext, org = (x, y + h),
+        #                                     fontFace = cv2.FONT_HERSHEY_COMPLEX,
+        #                                     fontScale = get_optimal_font_scale(phs['phrases'][i], phs['width'][i]),
+        #                                     color = (255 - int(colorR), 255 - int(colorG), 255 - int(colorB)), 
+        #                                     thickness = 2)
     # for i in range(n_boxes):
     #     if int(d['conf'][i]) > 60 and regex.search('[a-zA-Z]', d['text'][i]):
     #         (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
@@ -93,8 +88,10 @@ def Translate(imagefile):
     #                                             fontScale = 1,
     #                                             color = (0, 0, 0), thickness = 2)
     #save image
-    cv2.imshow('image', img)
-    cv2.waitKey()
+    #cv2.imshow('image', img)
+    #cv2.waitKey()
+    cv2.imwrite(LocalDerictory + "/" + imagefile, img)
+    print("succes")
 
 
 def get_optimal_font_scale(text, width):
