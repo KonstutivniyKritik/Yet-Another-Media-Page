@@ -107,4 +107,4 @@ def get_optimal_font_scale(text, width):
     return 1
 
 if ( __name__ == "__main__"):
-    Run ()
+    Run()
