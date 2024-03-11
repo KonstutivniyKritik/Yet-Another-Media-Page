@@ -9,29 +9,19 @@ import cv2
 import regex
 import numpy as np
 from googletrans import Translator
+import shutil
 
 def Run():
     onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
     for sourcefileineng in onlyfiles:
+        try:    
             Translate(sourcefileineng)
-
+        except:
+            shutil.copy(SourceDirectory + "/" + sourcefileineng, LocalDerictory + "/" + sourcefileineng)
+            print("Error in Translition part!!")
                 
 def Translate(imagefile):
     img = cv2.imread(SourceDirectory + "/" + imagefile)
-    
-    # Convert to HSV color-space
-    work_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-    # Up-sample
-    work_img = cv2.resize(work_img, (0, 0), fx=2, fy=2)
-
-    
-    # dilated_img = cv2.dilate(work_img, np.ones((7, 7), np.uint8))
-    # bg_img = cv2.medianBlur(dilated_img, 21)
-    # diff_img = 255 - cv2.absdiff(work_img, bg_img)
-    # norm_img = cv2.normalize(diff_img, None, alpha=0, beta=255,
-    #                          norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
-
     reader = easyocr.Reader(['ru', 'en'])
     ocr = reader.readtext(img)
 
@@ -61,42 +51,34 @@ def Translate(imagefile):
     #          width = 0
     #          height = 0
         
-    #change text
     n_boxes = len(ocr)
     translator = Translator()
     for i in range(n_boxes):
         (tl,tr,br,bl) = (ocr[i][0][0], ocr[i][0][1], ocr[i][0][2], ocr[i][0][3])
-        #colorR = img[x - 1 , y - 1, 0]
-        #colorG = img[x - 1 , y - 1, 1]
-        #colorB = img[x - 1 , y - 1, 2]
-        img = cv2.rectangle(img, (int(tl[0]),int(tl[1])) , (int(br[0]),int(br[1])), color = (0, 0, 0), thickness= 1)
-        #trtext = translator.translate(phs['phrases'][i], dest='ru').text
-        #img = cv2.putText(img, trtext, org = (x, y + h),
-        #                                     fontFace = cv2.FONT_HERSHEY_COMPLEX,
-        #                                     fontScale = get_optimal_font_scale(phs['phrases'][i], phs['width'][i]),
-        #                                     color = (255 - int(colorR), 255 - int(colorG), 255 - int(colorB)), 
-        #                                     thickness = 2)
-    # for i in range(n_boxes):
-    #     if int(d['conf'][i]) > 60 and regex.search('[a-zA-Z]', d['text'][i]):
-    #         (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-    #         ROI = img[y:y+h, x:x+w]
-    #         blur = cv2.GaussianBlur(ROI, (51,51), 100)
-    #         img[y:y+h, x:x+w] = blur
-    #         trtext = translator.translate(d['text'][i], dest='ru').text
-    #         img = cv2.putText(img, trtext, org = (d['left'][i], d['top'][i] + d['height'][i]),
-    #                                             fontFace = cv2.FONT_HERSHEY_COMPLEX,
-    #                                             fontScale = 1,
-    #                                             color = (0, 0, 0), thickness = 2)
-    #save image
-    #cv2.imshow('image', img)
-    #cv2.waitKey()
+        
+        mbx = int((tl[0] + tr[0])/2)
+        mby = int((tl[1] + bl[1])/2)# if int((tl[1] + bl[1])/4) < img.shape[1]  else img.shape[1] - 1 
+        img = cv2.rectangle(img, (int(tl[0]),int(tl[1])) , (int(br[0]),int(br[1])), color = (0, 0, 0), thickness= 4)
+        colorR = img[mbx, mby, 0]
+        colorG = img[mbx, mby, 1]
+        colorB = img[mbx, mby, 2]
+        ROI = img[int(tl[1]):int(br[1]), int(tl[0]):int(br[0])]
+        blur = cv2.GaussianBlur(ROI, (51,51), 100)
+        img[int(tl[1]):int(br[1]), int(tl[0]):int(br[0])] = blur
+        trtext = translator.translate(ocr[i][1], dest='ru').text
+        img = cv2.putText(img, trtext, org = (int(bl[0]), int((bl[1] + tl[1])/2)),
+                                             fontFace = cv2.FONT_HERSHEY_COMPLEX,
+                                             fontScale = get_optimal_font_scale(ocr[i][1], int(tl[0]-tr[0])),
+                                             color = (255 - int(colorR), 255 - int(colorG), 255 - int(colorB)), 
+                                             #color = (255,255,255),
+                                             thickness = 2)
     cv2.imwrite(LocalDerictory + "/" + imagefile, img)
-    print("succes")
+    print("Translation gone well!!!")
 
 
 def get_optimal_font_scale(text, width):
     for scale in reversed(range(0, 60, 1)):
-        textSize = cv2.getTextSize(text, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=scale/10, thickness=2)
+        textSize = cv2.getTextSize(text, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=scale/10, thickness=3)
         new_width = textSize[0][0]
         if (new_width <= width):
             print(new_width)
