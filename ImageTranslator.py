@@ -55,18 +55,21 @@ def Translate(imagefile):
     translator = Translator()
     for i in range(n_boxes):
         (tl,tr,br,bl) = (ocr[i][0][0], ocr[i][0][1], ocr[i][0][2], ocr[i][0][3])
-        
+        tl = tuple(map(int, tl))
+        tr = tuple(map(int, tr))
+        br = tuple(map(int, br))
+        bl = tuple(map(int, bl))
         mbx = int((tl[0] + tr[0])/2)
         mby = int((tl[1] + bl[1])/2)# if int((tl[1] + bl[1])/4) < img.shape[1]  else img.shape[1] - 1 
-        img = cv2.rectangle(img, (int(tl[0]),int(tl[1])) , (int(br[0]),int(br[1])), color = (0, 0, 0), thickness= 4)
-        colorR = img[mbx, mby, 0]
-        colorG = img[mbx, mby, 1]
-        colorB = img[mbx, mby, 2]
-        ROI = img[int(tl[1]):int(br[1]), int(tl[0]):int(br[0])]
-        blur = cv2.GaussianBlur(ROI, (51,51), 100)
-        img[int(tl[1]):int(br[1]), int(tl[0]):int(br[0])] = blur
+        #img = cv2.rectangle(img, (tl[0],tl[1]) , (br[0],br[1]), color = (0, 0, 0), thickness= 4)
+        colorR = img[mby, mbx, 0]
+        colorG = img[mby, mbx, 1]
+        colorB = img[mby, mbx, 2]
+        ROI = img[tl[1]:br[1], tl[0]:br[0]]
+        blur = cv2.blur(ROI, (51,51))
+        img[tl[1]:br[1], tl[0]:br[0]] = blur
         trtext = translator.translate(ocr[i][1], dest='ru').text
-        img = cv2.putText(img, trtext, org = (int(bl[0]), int((bl[1] + tl[1])/2)),
+        img = cv2.putText(img, trtext, org = (bl[0], int((bl[1] + tl[1])/2)),
                                              fontFace = cv2.FONT_HERSHEY_COMPLEX,
                                              fontScale = get_optimal_font_scale(ocr[i][1], int(tl[0]-tr[0])),
                                              color = (255 - int(colorR), 255 - int(colorG), 255 - int(colorB)), 
