@@ -4,15 +4,18 @@ from datetime import *
 from genericpath import isfile
 import os
 import pathlib
+from pickle import INT
 from threading import Thread
 from time import sleep
 from tkinter import Variable
+from xmlrpc.client import boolean
 import telebot
 from telebot import types
 import os
 from os.path import isfile, join
 import configparser
 import schedule
+from ImageTranslator import ImageTranslator
 import RedditScraper
 from Constants import *
 import BotStates
@@ -26,7 +29,7 @@ bot = telebot.TeleBot(BotToken)
 # NewBee = []
 Interval = config.get('Telegram Bot',"Interval")
 JobStartTime = datetime.now() + timedelta(hours= (int)(Interval[:2]), minutes= (int)(Interval[3:]))
-
+TranslateImage = config.get('Telegram Bot', "translate")
  
 
 @bot.message_handler(commands=["start"])
@@ -114,6 +117,8 @@ def get_text_messages(message):
         ReplyChangeQuantity(message)
     elif message.text == '5':
         ReplyChangeInterval(message)
+    elif message.text == '6':
+        ReplyChangeTranslate(message)
     elif message.text == BackInputText:
         ReplyStatus(message)
         
@@ -134,24 +139,24 @@ def get_text_messages(message):
         ReplySettings(message)
     elif message.text == '\U0001F525 Hot':
         if RedditScraper.ChangeOrder('hot'):
-            bot.send_message(message.from_user.id, "Порядок успешно изменен!!!")
+            bot.send_message(message.from_user.id, "Order changed!!!")
             ReplySettings(message)
         else:
-             bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+             bot.send_message(message.from_user.id, "Error! Try again:")
              ReplyChangeOrder(message)
     elif message.text == '\U0001F4A5 Top':
         if RedditScraper.ChangeOrder('top'):
-            bot.send_message(message.from_user.id, "Порядок успешно изменен!!!")
+            bot.send_message(message.from_user.id, "Order changed!!!")
             ReplySettings(message)
         else:
-             bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+             bot.send_message(message.from_user.id, "Error! Try again:")
              ReplyChangeOrder(message)
     elif message.text == '\U00002728 New':
         if RedditScraper.ChangeOrder('new'):
-            bot.send_message(message.from_user.id, "Порядок успешно изменен!!!")
+            bot.send_message(message.from_user.id, "Order changed!!!")
             ReplySettings(message)
         else:
-            bot.send_message(message.from_user.id, "Ошибка! Попробуйте снова:")
+            bot.send_message(message.from_user.id, "Error! Try again:")
             ReplyChangeOrder(message)
             
 @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_SETTIMEFILTER)
@@ -251,6 +256,8 @@ def ReplyStatus(message):
                                          + "\n"
                                          + "Content quantity: " + (str)(RedditScraper.GetQuantity()) + "\n"
                                          + "\n"
+                                         + "Translate image: " + (str)(TranslateImage) + "\n"
+                                         + "\n"
                                          + "Interval \U000023F3: " + Interval + "\n"
                                          + "\n"
                                          + "Next drop in \U000023F0: \n" + (str)(DeltaTime.seconds//3600) + ':' + (str)(DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60) + ':' + (str)(DeltaTime.seconds - ((DeltaTime.seconds//3600)*3600) - ((DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60)*60)), reply_markup = markup)
@@ -262,9 +269,10 @@ def ReplySettings(message):
     ChangeTimeFilterButton = types.KeyboardButton('3')
     ChangeQuantityButton = types.KeyboardButton('4')
     ChangeIntervalButton = types.KeyboardButton('5')
+    ChangeTranslateButton = types.KeyboardButton('6')
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(ChangeSubredditButton,ChangeOrderButton,ChangeTimeFilterButton,
-               ChangeQuantityButton, ChangeIntervalButton, BackButton)
+               ChangeQuantityButton, ChangeIntervalButton, ChangeTranslateButton, BackButton)
     bot.send_message(message.from_user.id, "Change subreddit (1): " + (str)(RedditScraper.GetSubreddit()) + "\n"
                                          + "\n"
                                          + "Change order (2): " + (str)(RedditScraper.GetOrder()) + "\n"
@@ -273,7 +281,9 @@ def ReplySettings(message):
                                          + "\n"
                                          + "Change download quantity (4): " + (str)(RedditScraper.GetQuantity()) + "\n"
                                          + "\n"
-                                         + "Change interval (5) \n" + (str)(Interval), reply_markup = markup)
+                                         + "Change interval (5): " + (str)(Interval) + "\n"
+                                         + "\n"
+                                         + "Change translation (6) \n" + (str)(TranslateImage), reply_markup = markup)
     
 def ReplyChangeSubreddit(message):
     ChangeConfig('State', BotStates.States.S_SETSUBREDDIT)
@@ -314,6 +324,13 @@ def ReplyChangeInterval(message):
     markup.add(BackButton)
     bot.send_message(message.from_user.id, "Write interval in 24-hour format (HH:MM)", reply_markup = markup)
 
+def ReplyChangeTranslate(message):
+    global TranslateImage
+    ChangeConfig('translate', "false" if TranslateImage == "true" else "true")
+    bot.send_message(message.from_user.id, "Translate option changed!!!")
+    TranslateImage = config.get('Telegram Bot', "translate")
+    ReplySettings(message)
+            
 def ChangeConfig(Title, Value):
     config['Telegram Bot'][Title] = Value
     with open(TBotConfigFile, mode = "w") as configfile:
@@ -324,10 +341,15 @@ def Job(id):
     bot.send_message(id, "Begin download...", )
     config.set('Telegram Bot',"State", BotStates.States.S_FRONTPAGE)
     if (RedditScraper.RedditDownload()):
-        onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
+        SendDirectory = SourceDirectory
+        if (TranslateImage == 'true'):
+            bot.send_message(id, "Download complete! Start translating...", )
+            SendDirectory = LocalDerictory
+            ImageTranslator.Run()
+        onlyfiles = [f for f in os.listdir(SendDirectory) if isfile(join(SendDirectory, f))]
         for sourcefileineng in onlyfiles:
             try:
-                bot.send_photo(id, photo=open(SourceDirectory + sourcefileineng, 'rb'))
+                bot.send_photo(id, photo=open(SendDirectory + sourcefileineng, 'rb'))
             except:
                 bot.send_message(id, "Error with Telegram sending", reply_markup = markup)
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
