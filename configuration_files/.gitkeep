@@ -18,3 +18,5 @@ ordertimefilter = hour
 bottoken = сюда вставить свой ключ
 state = 2
 interval = 01:00
+translate = true
+locallang = ru
