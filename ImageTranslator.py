@@ -3,6 +3,8 @@ from ntpath import join
 import os
 import easyocr
 from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 from Constants import *
 import shutil
 import cv2
@@ -47,6 +49,9 @@ class ImageTranslator:
         #          top = max(d['top'])
         #          width = 0
         #          height = 0
+        PILimg = Image.open(SourceDirectory + "/" + imagefile)
+        draw = ImageDraw.Draw(PILimg)
+        textfont = ImageFont.truetype("arial.ttf", 32, encoding='UTF-8')
         
         n_boxes = len(ocr)
         translator = Translator()
@@ -61,21 +66,21 @@ class ImageTranslator:
             mbx = int((tl[0] + tr[0])/2)
             mby = int((tl[1] + bl[1])/2)
             rectcolor = ImageTranslator.get_rectangle_color(img,tl,tr,br,bl)
-            img = cv2.rectangle(img, (tl[0],tl[1]) , (br[0],br[1]), color = rectcolor, thickness= -1)
-            #colorR = img[mby, mbx, 0]
-            #colorG = img[mby, mbx, 1]
-            #colorB = img[mby, mbx, 2]
-            #ROI = img[tl[1]:br[1], tl[0]:br[0]]
-            #blur = cv2.blur(ROI, (51,51))
-            #img[tl[1]:br[1], tl[0]:br[0]] = blur
+            draw.rectangle((tl,br), fill = rectcolor)
+            #img = cv2.rectangle(img, (tl[0],tl[1]) , (br[0],br[1]), color = rectcolor, thickness= -1)
             trtext = translator.translate(ocr[i][1], dest='ru').text
-            img = cv2.putText(img, trtext, org = (bl[0], int((bl[1] + tl[1])/2)),
-                                                 fontFace = cv2.FONT_HERSHEY_COMPLEX,
-                                                 fontScale = ImageTranslator.get_optimal_font_scale(ocr[i][1], int(tl[0]-tr[0])),
-                                                 color = (255 - int(rectcolor[0]), 255 - int(rectcolor[1]), 255 - int(rectcolor[2])), 
-                                                 #color = (255,255,255),
-                                                 thickness = 2)
-        cv2.imwrite(LocalDerictory + "/" + imagefile, img)
+            draw.text((bl[0], int((bl[1] + tl[1])/2)),
+                      trtext,
+                      (255 - int(rectcolor[0]), 255 - int(rectcolor[1]), 255 - int(rectcolor[2])), font = textfont)
+        PILimg.save(LocalDerictory + "/" + imagefile)
+        
+#            img = cv2.putText(img, trtext, org = (bl[0], int((bl[1] + tl[1])/2)),
+#                                                 fontFace = cv2.FONT_HERSHEY_COMPLEX,
+#                                                 fontScale = ImageTranslator.get_optimal_font_scale(ocr[i][1], int(tl[0]-tr[0])),
+#                                                 color = (255 - int(rectcolor[0]), 255 - int(rectcolor[1]), 255 - int(rectcolor[2])), 
+#                                                 #color = (255,255,255),
+#                                                 thickness = 2)
+#        cv2.imwrite(LocalDerictory + "/" + imagefile, img)
         print("Translation gone well!!!")
 
     def get_optimal_font_scale(text, width):
@@ -104,9 +109,9 @@ class ImageTranslator:
         BRCG = img[br[1], br[0], 1]
         BRCB = img[br[1], br[0], 2]
         
-        RR = (TLCR + TRCR + BLCR + BRCR)/4
-        RG = (TLCG + TRCG + BLCG + BRCG)/4
-        RB = (TLCB + TRCB + BLCB + BRCB)/4
+        RR = (int(TLCR) + int(TRCR) + int(BLCR) + int(BRCR))/4
+        RG = (int(TLCG) + int(TRCG) + int(BLCG) + int(BRCG))/4
+        RB = (int(TLCB) + int(TRCB) + int(BLCB) + int(BRCB))/4
         result = (int(RR), int(RG), int(RB))
         return result
 
