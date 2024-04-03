@@ -1,4 +1,6 @@
 
+from asyncio.windows_events import NULL
+from concurrent.futures import thread
 import configparser
 from datetime import *
 from genericpath import isfile
@@ -6,6 +8,7 @@ import os
 import pathlib
 from pickle import INT
 from threading import Thread
+import threading
 from time import sleep
 from tkinter import Variable
 from xmlrpc.client import boolean
@@ -20,6 +23,7 @@ import RedditScraper
 from Constants import *
 import BotStates
 from BotLayoutElements import *
+from threading import Thread
 
 config = configparser.ConfigParser()
 config.read(TBotConfigFile)
@@ -107,17 +111,17 @@ def get_text_messages(message):
 
 @bot.message_handler(func=lambda message: config.get('Telegram Bot',"State") == BotStates.States.S_SETTINGS)
 def get_text_messages(message):
-    if message.text == '1':
+    if message.text == SubredditText:
         ReplyChangeSubreddit(message)
-    elif message.text == '2':
+    elif message.text == OrderText:
         ReplyChangeOrder(message)
-    elif message.text == '3':
+    elif message.text == TimeFilterText:
         ReplyChangeTimeFilter(message)
-    elif message.text == '4':
+    elif message.text == DownloadQuantityText:
         ReplyChangeQuantity(message)
-    elif message.text == '5':
+    elif message.text == IntervalText:
         ReplyChangeInterval(message)
-    elif message.text == '6':
+    elif message.text == TranslitionText:
         ReplyChangeTranslate(message)
     elif message.text == BackInputText:
         ReplyStatus(message)
@@ -137,21 +141,21 @@ def get_text_messages(message):
 def get_text_messages(message):
     if message.text == BackInputText:
         ReplySettings(message)
-    elif message.text == '\U0001F525 Hot':
+    elif message.text == OrderHotText:
         if RedditScraper.ChangeOrder('hot'):
             bot.send_message(message.from_user.id, "Order changed!!!")
             ReplySettings(message)
         else:
              bot.send_message(message.from_user.id, "Error! Try again:")
              ReplyChangeOrder(message)
-    elif message.text == '\U0001F4A5 Top':
+    elif message.text == OrderTopText:
         if RedditScraper.ChangeOrder('top'):
             bot.send_message(message.from_user.id, "Order changed!!!")
             ReplySettings(message)
         else:
              bot.send_message(message.from_user.id, "Error! Try again:")
              ReplyChangeOrder(message)
-    elif message.text == '\U00002728 New':
+    elif message.text == OrderNewText:
         if RedditScraper.ChangeOrder('new'):
             bot.send_message(message.from_user.id, "Order changed!!!")
             ReplySettings(message)
@@ -248,42 +252,42 @@ def ReplyStatus(message):
     DeltaTime = JobStartTime - TimeNow
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(StatusButton, StealButton, SettingsButton)
-    bot.send_message(message.from_user.id, "Subreddit: " + (str)(RedditScraper.GetSubreddit()) + "\n"
+    bot.send_message(message.from_user.id, SubredditText + ": " + (str)(RedditScraper.GetSubreddit()) + "\n"
                                          + "\n"
-                                         + "Orter: " + (str)(RedditScraper.GetOrder()) + "\n"
+                                         + OrderText + ": "  + (str)(RedditScraper.GetOrder()) + "\n"
                                          + "\n"
-                                         + "Time Oreder: " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
+                                         + TimeFilterText + ": " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
                                          + "\n"
-                                         + "Content quantity: " + (str)(RedditScraper.GetQuantity()) + "\n"
+                                         + DownloadQuantityText + ": " + (str)(RedditScraper.GetQuantity()) + "\n"
                                          + "\n"
-                                         + "Translate image: " + (str)(TranslateImage) + "\n"
+                                         + TranslitionText + ": " + (str)(TranslateImage) + "\n"
                                          + "\n"
-                                         + "Interval \U000023F3: " + Interval + "\n"
+                                         + IntervalText + ": " + Interval + "\n"
                                          + "\n"
                                          + "Next drop in \U000023F0: \n" + (str)(DeltaTime.seconds//3600) + ':' + (str)(DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60) + ':' + (str)(DeltaTime.seconds - ((DeltaTime.seconds//3600)*3600) - ((DeltaTime.seconds//60 - DeltaTime.seconds//3600 * 60)*60)), reply_markup = markup)
     
 def ReplySettings(message):
     ChangeConfig('State', BotStates.States.S_SETTINGS)
-    ChangeSubredditButton = types.KeyboardButton('1')
-    ChangeOrderButton = types.KeyboardButton('2')
-    ChangeTimeFilterButton = types.KeyboardButton('3')
-    ChangeQuantityButton = types.KeyboardButton('4')
-    ChangeIntervalButton = types.KeyboardButton('5')
-    ChangeTranslateButton = types.KeyboardButton('6')
+    ChangeSubredditButton = types.KeyboardButton(SubredditText)
+    ChangeOrderButton = types.KeyboardButton(OrderText)
+    ChangeTimeFilterButton = types.KeyboardButton(TimeFilterText)
+    ChangeQuantityButton = types.KeyboardButton(DownloadQuantityText)
+    ChangeIntervalButton = types.KeyboardButton(IntervalText)
+    ChangeTranslateButton = types.KeyboardButton(TranslitionText)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add(ChangeSubredditButton,ChangeOrderButton,ChangeTimeFilterButton,
                ChangeQuantityButton, ChangeIntervalButton, ChangeTranslateButton, BackButton)
-    bot.send_message(message.from_user.id, "Change subreddit (1): " + (str)(RedditScraper.GetSubreddit()) + "\n"
+    bot.send_message(message.from_user.id, "Change "  + SubredditText + " : " + (str)(RedditScraper.GetSubreddit()) + "\n"
                                          + "\n"
-                                         + "Change order (2): " + (str)(RedditScraper.GetOrder()) + "\n"
+                                         + "Change "  + OrderText + " : " + (str)(RedditScraper.GetOrder()) + "\n"
                                          + "\n"
-                                         + "Change time order (3): " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
+                                         + "Change "  + TimeFilterText + " : " + (str)(RedditScraper.GetOrderTimeFilter()) + "\n"
                                          + "\n"
-                                         + "Change download quantity (4): " + (str)(RedditScraper.GetQuantity()) + "\n"
+                                         + "Change "  + DownloadQuantityText + " : " + (str)(RedditScraper.GetQuantity()) + "\n"
                                          + "\n"
-                                         + "Change interval (5): " + (str)(Interval) + "\n"
+                                         + "Change "  + IntervalText + " : " + (str)(Interval) + "\n"
                                          + "\n"
-                                         + "Change translation (6) \n" + (str)(TranslateImage), reply_markup = markup)
+                                         + "Change "  + TranslitionText + " : " + (str)(TranslateImage), reply_markup = markup)
     
 def ReplyChangeSubreddit(message):
     ChangeConfig('State', BotStates.States.S_SETSUBREDDIT)
@@ -294,9 +298,9 @@ def ReplyChangeSubreddit(message):
 def ReplyChangeOrder(message):
     ChangeConfig('State', BotStates.States.S_SETORDER)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    OrderHotButton = types.KeyboardButton('\U0001F525 Горячее')
-    OrderTopButton = types.KeyboardButton('\U0001F4A5 Лучшее')
-    OrderNewButton = types.KeyboardButton('\U00002728 Новое')
+    OrderHotButton = types.KeyboardButton(OrderHotText)
+    OrderTopButton = types.KeyboardButton(OrderTopText)
+    OrderNewButton = types.KeyboardButton(OrderNewText)
     markup.add(OrderHotButton,OrderTopButton,OrderNewButton,BackButton)
     bot.send_message(message.from_user.id, "Choose order ", reply_markup = markup)
     
@@ -337,21 +341,36 @@ def ChangeConfig(Title, Value):
         config.write(configfile)
     config.read(TBotConfigFile)
 
+def ProcessImage(file, SendDirectory, Func, id):
+    if (Func != NULL):
+        Func(file)
+    try:
+        bot.send_photo(id, photo=open(SendDirectory + file, 'rb'))
+    except:
+        bot.send_message(id, "Error with Telegram sending")
+        
+
 def Job(id):
-    bot.send_message(id, "Begin download...", )
-    config.set('Telegram Bot',"State", BotStates.States.S_FRONTPAGE)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(WaitButton)
+    bot.send_message(id, "Begin download...", reply_markup = markup)
+    config.set('Telegram Bot',"State", BotStates.States.S_PROCESSING)
     if (RedditScraper.RedditDownload()):
-        SendDirectory = SourceDirectory
-        if (TranslateImage == 'true'):
-            bot.send_message(id, "Download complete! Start translating...", )
-            SendDirectory = LocalDerictory
-            ImageTranslator.Run()
-        onlyfiles = [f for f in os.listdir(SendDirectory) if isfile(join(SendDirectory, f))]
-        for sourcefileineng in onlyfiles:
-            try:
-                bot.send_photo(id, photo=open(SendDirectory + sourcefileineng, 'rb'))
-            except:
-                bot.send_message(id, "Error with Telegram sending", reply_markup = markup)
+        bot.send_message(id, "Download complete!")
+        try:
+            func = NULL
+            onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
+            SendDirectory = SourceDirectory
+            if (TranslateImage == 'true'):
+                bot.send_message(id, "Start translating!")
+                SendDirectory = LocalDerictory
+                func = ImageTranslator.Run
+   
+            for sourcefileineng in onlyfiles:
+                t = Thread(target = ProcessImage, args = (sourcefileineng, SendDirectory, func, id))
+                t.run()
+        except:
+            bot.send_message(id, "Some Error Occured")
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
         bot.send_message(id, "End download...", reply_markup = markup)
@@ -359,6 +378,7 @@ def Job(id):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
         bot.send_message(id, "Error with Reddit library! ", reply_markup = markup) 
+    config.set('Telegram Bot',"State", BotStates.States.S_PROCESSING)
     UpdateSchedule()
    
 def UpdateSchedule():

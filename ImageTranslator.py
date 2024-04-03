@@ -115,14 +115,13 @@ class ImageTranslator:
         result = (int(RR), int(RG), int(RB))
         return result
 
-    def Run():
-        onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
-        for sourcefileineng in onlyfiles:
-            try:    
-                ImageTranslator.Translate(sourcefileineng)
-            except:
-                shutil.copy(SourceDirectory + "/" + sourcefileineng, LocalDerictory + "/" + sourcefileineng)
-                print("Error in Translition part!!")
+    def Run(filename):
+        file = os.path.basename(filename)
+        try:    
+            ImageTranslator.Translate(file)
+        except:
+            shutil.copy(SourceDirectory + "/" + file, LocalDerictory + "/" + file)
+            print("Error in Translition part!!")
                 
 
 

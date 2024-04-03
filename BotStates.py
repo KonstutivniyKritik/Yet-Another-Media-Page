@@ -9,4 +9,5 @@ class States():
     S_SETORDER = "6" # Смена порядка меню 
     S_SETTIMEFILTER = "7" # Смена временного порога меню
     S_SETINTERVAL = "8" # Смена интервала воровства меню
+    S_PROCESSING = "9"  # Обработка изображения
     
