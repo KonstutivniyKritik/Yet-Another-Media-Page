@@ -66,9 +66,12 @@ class ImageTranslator:
             b = trtext.find("()")
             text2put = trtext[:b]
             trtext = trtext[b + 3:]
+            textcolor = (0,0,0)
+            if (rectcolor[0] + rectcolor[1] + rectcolor[2] < 382):
+                textcolor = (255,255,255)
             draw.text((bl[0], int((bl[1] + tl[1])/2)),
                       text2put,
-                      (255 - int(rectcolor[0]), 255 - int(rectcolor[1]), 255 - int(rectcolor[2])), font = textfont)
+                      textcolor, font = textfont)
         PILimg.save(LocalDerictory + "/" + imagefile)
         print("Translation gone well!!!")
 
