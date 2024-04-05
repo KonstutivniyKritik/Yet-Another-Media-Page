@@ -23,7 +23,6 @@ import RedditScraper
 from Constants import *
 import BotStates
 from BotLayoutElements import *
-from threading import Thread
 
 config = configparser.ConfigParser()
 config.read(TBotConfigFile)
@@ -378,7 +377,7 @@ def Job(id):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
         bot.send_message(id, "Error with Reddit library! ", reply_markup = markup) 
-    config.set('Telegram Bot',"State", BotStates.States.S_PROCESSING)
+    config.set('Telegram Bot',"State", BotStates.States.S_FRONTPAGE)
     UpdateSchedule()
    
 def UpdateSchedule():
