@@ -6,3 +6,6 @@ source/
 /configuration_files/RedditScraperConfiguration.ini
 /configuration_files/TelegramBotConfiguration.ini
 /.vs
+
+/obj/Debug
+/MINOS.pyproj
