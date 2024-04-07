@@ -8,11 +8,8 @@ from PIL import ImageFont
 from Constants import *
 import shutil
 import cv2
-import regex
-import numpy as np
 from googletrans import Translator
 import shutil
-import math
 
 
 class ImageTranslator:

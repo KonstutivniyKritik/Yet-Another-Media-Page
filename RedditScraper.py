@@ -1,16 +1,10 @@
-import datetime
 import os
 import re
 import shutil
-from threading import Thread
-from time import sleep
-from xmlrpc.client import DateTime
-from praw.models import Subreddit
 import requests
 import praw
 import configparser
 import concurrent.futures
-import pathlib
 from Constants import * 
 
 config = configparser.ConfigParser()

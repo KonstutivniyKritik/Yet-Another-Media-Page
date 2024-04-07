@@ -1,17 +1,10 @@
 
-from asyncio.windows_events import NULL
-from concurrent.futures import thread
 import configparser
 from datetime import *
 from genericpath import isfile
 import os
-import pathlib
-from pickle import INT
 from threading import Thread
-import threading
 from time import sleep
-from tkinter import Variable
-from xmlrpc.client import boolean
 import telebot
 from telebot import types
 import os
@@ -341,7 +334,7 @@ def ChangeConfig(Title, Value):
     config.read(TBotConfigFile)
 
 def ProcessImage(file, SendDirectory, Func, id):
-    if (Func != NULL):
+    if (Func != None):
         Func(file)
     try:
         bot.send_photo(id, photo=open(SendDirectory + file, 'rb'))
@@ -357,7 +350,7 @@ def Job(id):
     if (RedditScraper.RedditDownload()):
         bot.send_message(id, "Download complete!")
         try:
-            func = NULL
+            func = None
             onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
             SendDirectory = SourceDirectory
             if (TranslateImage == 'true'):
