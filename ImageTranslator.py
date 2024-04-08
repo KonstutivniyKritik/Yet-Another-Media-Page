@@ -38,10 +38,9 @@ class ImageTranslator:
 
         PILimg = Image.open(SourceDirectory + "/" + imagefile)
         draw = ImageDraw.Draw(PILimg)
-        textfont = ImageFont.truetype("arial.ttf", 32, encoding='UTF-8')
         
         for i in range(n_boxes):
-            if (ocr[i][2] < 0.6):
+            if (ocr[i][2] < 0.5):
                 continue
             (tl,tr,br,bl) = (ocr[i][0][0], ocr[i][0][1], ocr[i][0][2], ocr[i][0][3])
             tl = tuple(map(int, tl))
@@ -53,20 +52,26 @@ class ImageTranslator:
             #draw.rectangle((tl,br),fill = rectcolor)
             
         for i in range(n_boxes):
-            if (ocr[i][2] < 0.6):
+            if (ocr[i][2] < 0.5):
                 continue
+            
             (tl,tr,br,bl) = (ocr[i][0][0], ocr[i][0][1], ocr[i][0][2], ocr[i][0][3])
             tl = tuple(map(int, tl))
             tr = tuple(map(int, tr))
             br = tuple(map(int, br))
             bl = tuple(map(int, bl))
+            
             b = trtext.find("()")
             text2put = trtext[:b]
             trtext = trtext[b + 3:]
+            
+            rectcolor = ImageTranslator.get_rectangle_color(img,tl,tr,br,bl)
             textcolor = (0,0,0)
             if (rectcolor[0] + rectcolor[1] + rectcolor[2] < 382):
                 textcolor = (255,255,255)
-            draw.text((bl[0], int((bl[1] + tl[1])/2)),
+                
+            textfont = ImageFont.truetype("arial.ttf", int(bl[1]/2 - tl[1]/2), encoding='UTF-8')
+            draw.text((bl[0], int(bl[1] + ((tl[1] - bl[1])/2))),
                       text2put,
                       textcolor, font = textfont)
         PILimg.save(LocalDerictory + "/" + imagefile)
