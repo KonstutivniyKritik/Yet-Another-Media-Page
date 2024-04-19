@@ -7,4 +7,5 @@ LocalDerictory = BaseDirectory + 'local/'
 ConfigDirectory = BaseDirectory + 'configuration_files/'
 TBotConfigFile = ConfigDirectory + 'TelegramBotConfiguration.ini'
 RScrConfigFile = ConfigDirectory + 'RedditScraperConfiguration.ini'
+Font = BaseDirectory + "arial.ttf"
 PassWord = "Password"

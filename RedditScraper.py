@@ -69,7 +69,7 @@ def RedditDownload():
         scraper = redditImageScraper(__SubReddit, __Quantity, __Order)
         scraper.start()
         return True
-    except:
+    except Exception:
         return False
     
 def ClearDirectory(Directory):

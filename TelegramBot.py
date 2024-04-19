@@ -30,18 +30,18 @@ TranslateImage = config.get('Telegram Bot', "translate")
 
 @bot.message_handler(commands=["start"])
 def startmessage(message):
-    # if not os.path.exists(SourceDirectory):
-    #     os.makedirs(SourceDirectory)
-    # if not os.path.exists(LocalDerictory):
-    #     os.makedirs(LocalDerictory)  
+    if not os.path.exists(SourceDirectory):
+        os.makedirs(SourceDirectory)
+    if not os.path.exists(LocalDerictory):
+        os.makedirs(LocalDerictory)  
     # if message.from_user.id in Users:
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        markup.add(StatusButton, StealButton, SettingsButton)
-        bot.send_message(message.from_user.id, "Ready to work!", reply_markup = markup)
-        UpdateSchedule()
-        ReplyStatus(message)
-        Thread(target=schedule_checker).start() 
-        bot.polling(none_stop= True, interval= 0)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(StatusButton, StealButton, SettingsButton)
+    bot.send_message(message.from_user.id, "Ready to work!", reply_markup = markup)
+    UpdateSchedule()
+    ReplyStatus(message)
+    Thread(target=schedule_checker).start() 
+    bot.polling(none_stop= True, interval= 0)
     # else: 
     #     NewBee.append(message.from_user.id)
     #     bot.send_message(message.from_user.id, "Введи пароль")
@@ -363,14 +363,17 @@ def Job(id):
                 t.run()
         except:
             bot.send_message(id, "Some Error Occured")
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        markup.add(StatusButton, StealButton, SettingsButton)
-        bot.send_message(id, "End download...", reply_markup = markup)
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            markup.add(StatusButton, StealButton, SettingsButton)
+            bot.send_message(id, "End download...", reply_markup = markup)
     else:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         markup.add(StatusButton, StealButton, SettingsButton)
         bot.send_message(id, "Error with Reddit library! ", reply_markup = markup) 
     config.set('Telegram Bot',"State", BotStates.States.S_FRONTPAGE)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(StatusButton, StealButton, SettingsButton)
+    bot.send_message(id, "Success!!!", reply_markup = markup)
     UpdateSchedule()
    
 def UpdateSchedule():
