@@ -26,7 +26,8 @@ bot = telebot.TeleBot(BotToken)
 Interval = config.get('Telegram Bot',"Interval")
 JobStartTime = datetime.now() + timedelta(hours= (int)(Interval[:2]), minutes= (int)(Interval[3:]))
 TranslateImage = config.get('Telegram Bot', "translate")
- 
+KillThread = False
+WorkingThread = None
 
 @bot.message_handler(commands=["start"])
 def startmessage(message):
@@ -40,8 +41,14 @@ def startmessage(message):
     bot.send_message(message.from_user.id, "Ready to work!", reply_markup = markup)
     UpdateSchedule()
     ReplyStatus(message)
-    Thread(target=schedule_checker).start() 
-    bot.polling(none_stop= True, interval= 0)
+    global WorkingThread
+    global KillThread
+    if (WorkingThread != None):
+        KillThread = True
+        WorkingThread.join(1)
+    KillThread = False
+    WorkingThread = Thread(target=schedule_checker)
+    WorkingThread.start()
     # else: 
     #     NewBee.append(message.from_user.id)
     #     bot.send_message(message.from_user.id, "Введи пароль")
@@ -389,7 +396,8 @@ def UpdateSchedule():
     schedule.every().day.at(hr + ':' + mnt).do(Job, 1012947591)
 
 def schedule_checker():
-    while True:
+    global KillThread
+    while (KillThread == False):
         schedule.run_pending()
         sleep(1)
         

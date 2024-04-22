@@ -8,7 +8,7 @@ from PIL import ImageFont
 from Constants import *
 import shutil
 from googletrans import Translator
-
+import gc
 
 class ImageTranslator:
     
@@ -23,8 +23,6 @@ class ImageTranslator:
         #group words into phrases
         phs = {'phrases': [], 'tl': [], 'tr': [], 'br': [], 'bl': []}
         ph = ""
-        # width = 0
-        # height = 0  
         for i in range(n_boxes):
              if (ocr[i][2] >  0.5):
                 ph += ocr[i][1] + "() "
@@ -69,7 +67,15 @@ class ImageTranslator:
                       textcolor, font = textfont)
         PILimg.save(LocalDerictory + "/" + imagefile)
         print("Translation gone well!!!")
-
+        del reader
+        del ocr
+        del PILimg
+        del draw
+        del tl
+        del tr
+        del br
+        del bl
+        gc.collect()
     
     def get_rectangle_color(pimg,tl,tr,bl,br):
         rgb_im = pimg.convert('RGB')
@@ -85,23 +91,22 @@ class ImageTranslator:
 
     def Run(filename):
         file = os.path.basename(filename)
-        #try:    
-        ImageTranslator.Translate(file)
-        #except:
-        #    shutil.copy(SourceDirectory + "/" + file, LocalDerictory + "/" + file)
-        #    print("Error in Translition part!!")
-                
+        try:    
+            ImageTranslator.Translate(file)
+        except:
+            shutil.copy(SourceDirectory + "/" + file, LocalDerictory + "/" + file)
+            print("Error in Translition part!!")
 
 
 
 def TestRun():
     onlyfiles = [f for f in os.listdir(SourceDirectory) if isfile(join(SourceDirectory, f))]
     for file in onlyfiles:  
-        try:
-            ImageTranslator.Translate(file)
-        except:
-            shutil.copy(SourceDirectory + "/" + file, LocalDerictory + "/" + file)
-            print("Error in Translition part!!")
+        #try:
+        ImageTranslator.Translate(file)
+        #except:
+        #    shutil.copy(SourceDirectory + "/" + file, LocalDerictory + "/" + file)
+        #    print("Error in Translition part!!")
             
 if ( __name__ == "__main__"):
     TestRun()
