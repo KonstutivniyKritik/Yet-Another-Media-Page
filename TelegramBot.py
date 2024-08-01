@@ -16,6 +16,7 @@ import RedditScraper
 from Constants import *
 import BotStates
 from BotLayoutElements import *
+from PIL import Image
 
 config = configparser.ConfigParser()
 config.read(TBotConfigFile)
@@ -341,12 +342,28 @@ def ChangeConfig(Title, Value):
     config.read(TBotConfigFile)
 
 def ProcessImage(file, SendDirectory, Func, id):
-    if (Func != None):
-        Func(file)
-    try:
+    #try:
+        #Если изображение слишком большое, то проиходит недостаток оперативной памяти
+        foo = Image.open(SourceDirectory + file)
+        if (foo.size[0] > 800 or foo.size[1] > 800):
+            decrease = 1.0
+            if (foo.size[0] > 800 and foo.size[0] > foo.size[1]):
+                decrease = foo.size[0]/800
+            if (foo.size[1] > 800 and foo.size[1] > foo.size[0]):
+                decrease = foo.size[1]/800
+            foo = foo.resize(((int)(foo.size[0]/decrease),(int)(foo.size[1]/decrease)))
+            filels = os.path.splitext(file)
+            optfile = filels[0] + "OPTIMIZED" + filels[1]
+            foo.save(SourceDirectory + "//" + optfile)
+            foo.close()
+            file = optfile
+            
+        if (Func != None):
+            Func(file)
+    
         bot.send_photo(id, photo=open(SendDirectory + file, 'rb'))
-    except:
-        bot.send_message(id, "Error with Telegram sending")
+    #except:
+        #bot.send_message(id, "Error with Telegram sending")
         
 
 def Job(id):
